@@ -10,7 +10,8 @@ export class MyCdkProjectStack extends cdk.Stack {
     super(scope, id, props);
 
     const addressTable = new dynamodb.Table(this, 'AddressTable', {
-      partitionKey: { name: 'userId', type: dynamodb.AttributeType.STRING },
+      partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
+      sortKey:{name: 'userId', type: dynamodb.AttributeType.STRING}
     });
 
     //Lambda function for storing addresses
@@ -49,7 +50,7 @@ export class MyCdkProjectStack extends cdk.Stack {
       .addResource('users')
       .addMethod("GET", getAddressIntegration);
 
-      
+
       new cdk.CfnOutput(this, "API URL",{
         value: api.url ?? "Something went wrong"
       })
