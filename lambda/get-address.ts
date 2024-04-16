@@ -4,13 +4,11 @@ import { marshall,unmarshall } from '@aws-sdk/util-dynamodb';
 import { AttributeValue } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 import { APIGatewayProxyHandler} from 'aws-lambda';
-const dynamoDbClient = new DynamoDBClient({ region: 'us-east-1' });
 
+const dynamoDbClient = new DynamoDBClient({ region: 'us-east-1' });
 const tableName = process.env.ADDRESS_TABLE;
 
 export const getAddressHandler = async (event: any) => {
-    
-
     
     console.info("request:", JSON.stringify(event, undefined, 2));
     
@@ -22,7 +20,7 @@ export const getAddressHandler = async (event: any) => {
     const postcode = event.queryStringParameters['postcode'];
 
     console.info(event.queryStringParameters);
-
+    
     let params = {
         TableName: tableName,
         FilterExpression: 'userId = :userId',
@@ -31,7 +29,7 @@ export const getAddressHandler = async (event: any) => {
             ':userId': userId
           })
         }
-   
+        // Filtering the optional parameters: suburb and postcode
         if (suburb && postcode) {
             params.FilterExpression += ' AND suburb = :suburb AND postcode = :postcode';
             params.ExpressionAttributeValues = marshall({':userId': userId , ':suburb': suburb, ':postcode': postcode})
@@ -53,6 +51,7 @@ export const getAddressHandler = async (event: any) => {
         
 
     try {
+        // Getting the addresses for a given user id 
         const Item  =  await dynamoDbClient.send(new ScanCommand(params));
         const unmarshalledItem = Item.Items?.map(item => unmarshall(item));
 

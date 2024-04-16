@@ -8,7 +8,8 @@ import * as path from 'path';
 export class MyCdkProjectStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
-
+    
+    //Dynamodb table 
     const addressTable = new dynamodb.Table(this, 'AddressTable', {
       partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
       sortKey:{name: 'userId', type: dynamodb.AttributeType.STRING}

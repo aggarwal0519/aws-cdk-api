@@ -6,10 +6,11 @@ const dynamoDbClient = new DynamoDBClient({ region: 'us-east-1' });
 const tableName = process.env.ADDRESS_TABLE;
 
 export const storeAddressHandler = async (event: any) => {
-    
+    //Logs to check in CloudWatch
     console.info('received', event);
-        
+    
     let requestBody;
+    //Parsing the request body
     try {
       requestBody = JSON.parse(event.body);
     }
