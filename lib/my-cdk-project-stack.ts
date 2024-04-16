@@ -36,20 +36,42 @@ export class MyCdkProjectStack extends cdk.Stack {
     });
     addressTable.grantReadData(getAddressLambda);
 
+     
+
      // REST API Gateway
      const api = new apigateway.RestApi(this, 'address-api');
 
+     // Create API Key
+     const apiKey = new apigateway.ApiKey(this, 'ApiKey');
+
+     // Add usage plan
+     const usagePlan = new apigateway.UsagePlan(this, 'UsagePlan', {
+       name: 'Usage Plan',
+       apiStages: [
+         {
+           api: api,
+           stage: api.deploymentStage,
+         },
+       ],
+     });
+ 
+     // Add API key to deployment
+     usagePlan.addApiKey(apiKey);
+
      //To store Address 
      const storeAddressIntegration = new apigateway.LambdaIntegration(storeAddressLambda);
-      api.root.addMethod("POST", storeAddressIntegration);
+      api.root.addMethod("POST", storeAddressIntegration, {apiKeyRequired: true});
       
 
       // To get Address
       const getAddressIntegration  = new apigateway.LambdaIntegration(getAddressLambda);
       api.root
       .addResource('users')
-      .addMethod("GET", getAddressIntegration);
+      .addMethod("GET", getAddressIntegration,  {apiKeyRequired: true});
 
+      new cdk.CfnOutput(this, "API KEY ID",{
+        value: apiKey.keyId ?? "Something went wrong"
+      })
 
       new cdk.CfnOutput(this, "API URL",{
         value: api.url ?? "Something went wrong"
